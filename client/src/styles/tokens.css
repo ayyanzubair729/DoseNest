@@ -1,0 +1,50 @@
+:root {
+  /* Brand palette */
+  --color-yellow: #f6c453;
+  --color-yellow-soft: #fbe6ad;
+  --color-green: #79b851;
+  --color-green-soft: #e3f1d6;
+  --color-mint: #e9f4ec;
+  --color-mint-deep: #b7ddc4;
+  --color-pink-soft: #fbe4e4;
+  --color-lavender: #ece4f6;
+
+  /* Surfaces and text */
+  --color-background: #faf7f0;
+  --color-surface: #ffffff;
+  --color-ink: #22303c;
+  --color-ink-soft: #5d6b77;
+  --color-border: #e9e2d4;
+  --color-focus: #3f9b6a;
+
+  /* Feedback */
+  --color-success: #2f9e63;
+  --color-danger: #d64545;
+  --color-warning: #c98a2d;
+
+  /* Typography */
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(34, 48, 60, 0.06);
+  --shadow-md: 0 6px 18px -6px rgba(34, 48, 60, 0.12);
+  --shadow-lg: 0 16px 40px -12px rgba(34, 48, 60, 0.18);
+
+  /* Layout */
+  --container-max: 1160px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+}
