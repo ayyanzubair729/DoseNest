@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "whatsapp:subscribe": "node scripts/subscribe-whatsapp-webhook.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -55,6 +55,11 @@ export default function Footer() {
                 <a href="#about">About</a>
               </li>
               <li>
+                <a href="https://github.com/ayyanzubair729" target="_blank" rel="noopener noreferrer">
+                  GitHub
+                </a>
+              </li>
+              <li>
                 <a href="mailto:hello@dosenest.app">Contact</a>
               </li>
             </ul>

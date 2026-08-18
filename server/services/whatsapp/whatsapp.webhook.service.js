@@ -8,10 +8,13 @@
  *  1. Delivery status updates (sent/delivered/read/failed) matched to the
  *     existing Notification via providerMessageId — the Notification record
  *     from Phase 7 is updated in place, never recreated.
- *  2. Incoming text messages — the "TAKEN" command — which confirm a real
- *     MedicationLog. The sender phone number (not any body-supplied id) is
- *     the account identity; the MedicationLog remains the source of truth
- *     for adherence, and the confirmation reply reuses whatsapp.service.js.
+ *  2. Incoming text messages, routed through whatsapp.conversation.service.js.
+ *     The conversation service identifies the intent (greeting, next dose,
+ *     TAKEN, TAKEN <name>, medication list, today's doses, help, unknown),
+ *     resolves data against the user's OWN records, and returns the reply
+ *     (and, for TAKEN, the MedicationLog to mark taken). The confirmation
+ *     reply reuses whatsapp.service.js. This is rule-based routing to real
+ *     reminder/dose records — NOT an AI chatbot.
  *
  * Security:
  *  - The sender is resolved ONLY through the verified WhatsApp phone number
@@ -34,7 +37,7 @@ const { NOTIFICATION_TYPES } = require("../../constants/notificationTypes");
 const { getConfig } = require("./whatsapp.config");
 const { sendWhatsAppMessage } = require("./whatsapp.service");
 const notificationService = require("../notification.service");
-const templates = require("./whatsapp.templates");
+const conversationService = require("./whatsapp.conversation.service");
 
 // Logging-only mask: "+15551234567" -> "+1555*****567".
 const maskPhone = (value) => {
@@ -198,11 +201,6 @@ const replyText = (user, body) => {
     });
 };
 
-const confirmationText = (log) => {
-  const subject = templates.buildSubject(log.medication, log.familyMember);
-  return `Got it 💛 ${subject} has been marked as taken.`;
-};
-
 /**
  * Marks the eligible dose as taken. Atomic guarded update — if the log was
  * already taken (or marked missed/skipped by a race), nothing changes and no
@@ -251,7 +249,8 @@ const markDoseTaken = async (userId, log) => {
 
 /**
  * Incoming message: resolves the sender through their registered phone
- * number, honors opt-in, and handles the TAKEN command.
+ * number, honors opt-in, and routes the message through the conversation
+ * service. Idempotency is preserved: every event id is claimed exactly once.
  */
 const handleIncomingMessage = async (message) => {
   const messageId = message?.id;
@@ -269,91 +268,36 @@ const handleIncomingMessage = async (message) => {
   const user = await User.findOne({ phoneNumber: from });
   if (!user) {
     // Never reveal whether a number belongs to a DoseNest account.
-    logInfo("incoming message from unknown sender", { sender: maskPhone(from) });
+    logInfo("ignored: sender not registered", { sender: maskPhone(from) });
     return { result: "ignored", reason: "unknown-sender" };
   }
   const userId = user._id.toString();
 
-  // Only an explicitly recognized command (TAKEN / YES / DONE, optionally
-  // followed by a medication name) triggers anything. Anything else gets a
-  // short helpful reply for opted-in users — no chatbot.
-  const commandMatch = text.match(/^(?:TAKEN|YES|DONE)\b(.*)$/i);
-  if (!commandMatch) {
-    if (user.notificationPreferences?.whatsapp === true) {
-      replyText(
-        user,
-        "Hi! You can reply TAKEN when you've taken your medication to confirm the dose."
-      );
-    }
-    logInfo("unrecognized message", { userId, sender: maskPhone(from) });
-    return { result: "ignored", reason: "unrecognized-command" };
-  }
-  const query = commandMatch[1].trim();
-
-  // Part 20 — WhatsApp reminders disabled: no medication action.
+  // The opt-in gate applies to ALL incoming message handling, not just TAKEN.
+  // A linked phone number is never treated as consent by itself.
   if (user.notificationPreferences?.whatsapp !== true) {
-    logInfo("TAKEN ignored — WhatsApp reminders disabled", {
-      userId,
-      sender: maskPhone(from),
-    });
+    logInfo("ignored: sender not opted in", { userId, sender: maskPhone(from) });
     return { result: "ignored", reason: "not-opted-in" };
   }
 
-  // Eligible doses: scheduled within the confirmation window and still
-  // actionable (upcoming or missed, never already taken).
-  const config = getConfig();
-  const windowMs = config.takenConfirmationWindowMinutes * 60000;
-  const now = new Date();
-  const eligible = await MedicationLog.find({
-    user: user._id,
-    status: { $in: ["upcoming", "missed"] },
-    scheduledFor: { $gte: new Date(now.getTime() - windowMs), $lte: now },
-  })
-    .sort({ scheduledFor: -1 })
-    .populate("medication", "name dosage dosageUnit form")
-    .populate("familyMember", "name");
+  const outcome = await conversationService.handleTextMessage({ user, text });
 
-  if (eligible.length === 0) {
-    replyText(user, "I couldn't find a recent dose to confirm. Check your reminders in the app. 💛");
-    logInfo("TAKEN ignored — no eligible dose in window", { userId });
-    return { result: "processed", reason: "no-eligible-dose" };
-  }
-
-  let candidates = eligible;
-  if (query) {
-    const normalizedQuery = query.toLowerCase();
-    candidates = eligible.filter((log) => {
-      const name = String(log.medication?.name || "").toLowerCase();
-      return name === normalizedQuery || name.startsWith(normalizedQuery);
-    });
-    if (candidates.length === 0) {
-      replyText(
-        user,
-        `I couldn't find a dose matching "${query}". Reply TAKEN with the medication name shown in your reminders.`
-      );
-      logInfo("TAKEN with unmatched medication name", { userId });
-      return { result: "processed", reason: "no-name-match" };
+  // A TAKEN confirmation has a target MedicationLog — persist it atomically.
+  if (outcome.logToConfirm) {
+    const updated = await markDoseTaken(userId, outcome.logToConfirm);
+    if (updated) {
+      replyText(user, outcome.reply);
+      logInfo("taken confirmed", { userId, intent: outcome.intent, reason: "taken-confirmed" });
+      return { result: "processed", reason: "taken-confirmed" };
     }
+    replyText(user, "This dose is already marked as taken. 💛");
+    logInfo("taken ignored — already recorded", { userId, intent: outcome.intent });
+    return { result: "ignored", reason: "already-taken" };
   }
 
-  if (candidates.length > 1) {
-    // Never guess between multiple eligible doses — ask for the name.
-    const names = candidates.map((log) => log.medication?.name || "medication");
-    replyText(
-      user,
-      `I found a few doses: ${names.join(", ")}. Reply "TAKEN <medication name>" to confirm the right one.`
-    );
-    logInfo("TAKEN ambiguous — clarification requested", { userId, candidates: candidates.length });
-    return { result: "processed", reason: "ambiguous" };
-  }
-
-  const log = candidates[0];
-  const updated = await markDoseTaken(userId, log);
-  if (updated) {
-    replyText(user, confirmationText(log));
-    return { result: "processed", reason: "taken-confirmed" };
-  }
-  return { result: "ignored", reason: "already-taken" };
+  replyText(user, outcome.reply);
+  logInfo("message processed", { userId, intent: outcome.intent, sender: maskPhone(from) });
+  return { result: "processed", reason: `intent:${outcome.intent}` };
 };
 
 /**

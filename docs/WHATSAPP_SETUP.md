@@ -101,7 +101,51 @@ the defaults are shown.
 - If a required template is missing/not approved, the affected reminder is recorded as failed
   and other functionality is unaffected.
 
-### 3.4 Verify real delivery safely
+### 3.4 Subscribe the app to the WABA (required for message webhooks)
+
+The GET verification handshake can succeed even when the app is **not** subscribed
+to the WABA — the handshake is app-level, but Meta only delivers POST message
+events to apps subscribed to the WABA. Without the subscription you get:
+
+- `GET /api/webhooks/whatsapp` → `200 OK` (verification works), but
+- **no** `POST /api/webhooks/whatsapp` when a WhatsApp message arrives.
+
+Subscribe the app with:
+
+```bash
+npm run whatsapp:subscribe   # in server/ (reads server/.env)
+```
+
+The script reads `WHATSAPP_ACCESS_TOKEN` and `WHATSAPP_BUSINESS_ACCOUNT_ID`
+(the WABA ID) from `server/.env`, checks the current state, then issues
+`POST /{WABA-ID}/subscribed_apps`. It never prints the token. The equivalent
+manual call is:
+
+```
+POST https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WABA_ID}/subscribed_apps
+Authorization: Bearer <access token>
+```
+
+A successful response is `{ "success": true }` (or a `basic_subscription_success`
+summary). The access token must have the **`whatsapp_business_management`** and
+**`whatsapp_business_messaging`** permissions.
+
+To find your **WABA ID**: Meta for Developers → your App → **WhatsApp → API Setup**
+→ the "Temporary access token" panel shows the assigned test number; the WABA ID
+appears next to the WhatsApp Business Account. Alternatively use the Graph API
+Explorer:
+
+```
+GET /{app-id}/owned_whatsapp_business_accounts   # not valid for all apps
+```
+
+and if that field is not accessible, use the **WhatsApp Manager URL**
+(`business.facebook.com/wa/manage`) — the WABA ID is in the page URL or account
+menu. Do **not** confuse: App ID (numeric, per-app), Business Portfolio ID,
+WABA ID (the account the phone number belongs to), and Phone Number ID (per
+phone number) are four different identifiers.
+
+### 3.5 Verify real delivery safely
 
 1. Set the env vars above and restart the server. The startup log should show
    `WhatsApp: enabled=true configured=true testMode=false`.
@@ -122,6 +166,10 @@ DoseNest uses webhooks for two things:
 2. **Incoming replies** — a user replying **TAKEN** (or **YES** / **DONE**, optionally
    `TAKEN <medication name>`) marks the corresponding medication log as taken. Duplicate
    webhook deliveries are deduplicated.
+
+> ⚠️ Before testing incoming messages, make sure the app is subscribed to the
+> WABA (see §3.4). A successful GET handshake alone does **not** mean Meta will
+> deliver POST message events.
 
 ### 4.1 Webhook URL
 

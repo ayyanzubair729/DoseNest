@@ -101,6 +101,121 @@ const buildReminderMessage = (context) => {
 };
 
 /**
+ * Greeting reply — friendly and data-aware. Includes the next upcoming dose so
+ * the greeting is never generic.
+ */
+const buildGreeting = (user, nextDose) => {
+  const firstName = firstOrFullName(user?.name) || "there";
+  const lines = [`Hi ${firstName} 👋`];
+  if (nextDose) {
+    const subject = buildSubject(nextDose.medication, nextDose.familyMember);
+    const time = formatDoseTime(nextDose.schedule);
+    lines.push(`Your next dose is ${subject}${time ? ` at ${time}` : ""}.`);
+  } else {
+    lines.push("You have no upcoming doses scheduled right now.");
+  }
+  lines.push("Ask me \"What's my next dose?\", \"What have I taken today?\", or just reply TAKEN after a dose.");
+  return lines.join("\n\n");
+};
+
+/**
+ * Next-dose reply — the user's actual next upcoming dose from real records.
+ */
+const buildNextDose = (nextDose) => {
+  if (!nextDose) {
+    return "You don't have any upcoming doses scheduled. ❤️";
+  }
+  const subject = buildSubject(nextDose.medication, nextDose.familyMember);
+  const time = formatDoseTime(nextDose.schedule);
+  return `Your next dose is ${subject}${time ? ` at ${time}` : ""}. 💊`;
+};
+
+/**
+ * Confirmation after a dose is marked taken via WhatsApp.
+ */
+const buildTakenConfirmation = (medication, familyMember) => {
+  const subject = buildSubject(medication, familyMember);
+  return `Done! ${subject} has been marked as taken. 💚`;
+};
+
+/**
+ * Ambiguous TAKEN — multiple relevant doses; list them so the user can pick.
+ */
+const buildTakenAmbiguous = (candidates) => {
+  const lines = ["Which dose did you take?"];
+  candidates.forEach((candidate, index) => {
+    const subject = buildSubject(candidate.medication, candidate.familyMember);
+    const time = formatDoseTime(candidate.schedule);
+    lines.push(`${index + 1}. ${subject}${time ? ` — ${time}` : ""}`);
+  });
+  lines.push('Reply "TAKEN <name>" to confirm the right one.');
+  return lines.join("\n");
+};
+
+/**
+ * Medication list — the user's active medications with dosage.
+ */
+const buildMedicationList = (medications) => {
+  if (medications.length === 0) {
+    return "You don't have any medications saved yet. Add one in the DoseNest app.";
+  }
+  const lines = ["Your current medications:"];
+  medications.forEach((medication) => {
+    const dosage = [medication.dosage, medication.dosageUnit].filter(Boolean).join(" ");
+    const name = medication.name || "medication";
+    lines.push(`• ${name}${dosage ? ` — ${dosage}` : ""}`);
+  });
+  return lines.join("\n");
+};
+
+/**
+ * Today's doses — real dose records for today, with their current state.
+ */
+const buildTodayDoses = (entries) => {
+  if (entries.length === 0) {
+    return "You don't have any doses scheduled today. ❤️";
+  }
+  const lines = ["Your doses today:"];
+  entries.forEach((entry) => {
+    const subject = buildSubject(entry.medication, entry.familyMember);
+    const time = formatDoseTime(entry.schedule);
+    const state =
+      entry.status === "taken"
+        ? "taken ✓"
+        : entry.status === "missed"
+          ? "missed"
+          : entry.status === "skipped"
+            ? "skipped"
+            : "upcoming";
+    lines.push(`• ${subject}${time ? ` — ${time}` : ""} (${state})`);
+  });
+  return lines.join("\n");
+};
+
+/**
+ * Help — concise list of supported commands.
+ */
+const buildHelp = () => {
+  return [
+    "You can ask me:",
+    "• What's my next dose?",
+    "• What medications am I taking?",
+    "• What have I taken today?",
+    "• TAKEN",
+    "• TAKEN <medication name>",
+    "",
+    "Reply TAKEN after you've taken a dose to confirm it.",
+  ].join("\n");
+};
+
+/**
+ * Fallback for messages DoseNest doesn't understand — friendly, never silent.
+ */
+const buildUnknown = () => {
+  return "I'm not sure what you mean. Try \"What's my next dose?\", \"What medications am I taking?\", or \"HELP\".";
+};
+
+/**
  * Message for the manual test endpoint. Real delivery requires an approved
  * template (business-initiated messages cannot be plain text), so it returns
  * both the template parameters ({{1}} first name) and a plain-text fallback
@@ -117,9 +232,17 @@ const buildTestMessage = (user) => {
 
 module.exports = {
   buildDueMessage,
+  buildGreeting,
+  buildHelp,
+  buildMedicationList,
   buildMissedMessage,
+  buildNextDose,
   buildReminderMessage,
   buildSubject,
+  buildTakenAmbiguous,
+  buildTakenConfirmation,
   buildTakenMessage,
   buildTestMessage,
+  buildTodayDoses,
+  buildUnknown,
 };
