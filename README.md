@@ -8,7 +8,7 @@ members — with clear schedules, gentle reminders, and an honest record of what
 or snoozed.
 
 Built as a modern, friendly healthcare/family-care MERN application with a soft yellow & green
-bird mascot as its brand identity.
+bird mascot as its brand identity
 
 > DoseNest is **not** a medical device, diagnostic tool, or advice platform. It helps organize the
 > medications you and your family already take. This is an original product, not affiliated with or
