@@ -71,7 +71,6 @@ export default function DashboardPage() {
       setDoseBusy(false);
     }
   };
-
   const statCards = [
     {
       label: "Active medications",
