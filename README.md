@@ -2,6 +2,8 @@
 
 > AI-Powered Medication Management System
 
+<!-- Pair Extraordinaire badge contribution -->
+
 <div align="center">
   <img src="./dosenest.png?v=2" alt="DoseNest Logo" width="400">
 </div>
