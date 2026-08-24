@@ -122,8 +122,7 @@ export default function DashboardPage() {
               <span className="family-dashboard__value">
                 {familyOverview.adherencePct === null ? "—" : `${familyOverview.adherencePct}%`}
               </span>
-              <span className="family-dashboard__label">family adherence today</span>
-            </div>
+              <span className="family-dashboard__label">family adherence today</span></div>
             <div className="family-dashboard__stat family-dashboard__stat--wide">
               {familyOverview.upcomingDose ? (
                 <>
