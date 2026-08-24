@@ -1,7 +1,7 @@
 # DoseNest
 
 <div align="center">
-  <img src="./dosenest.png" alt="DoseNest Logo" width="400">
+  <img src="./dosenest.png?v=2" alt="DoseNest Logo" width="400">
 </div>
 
 **Your medication companion for you and your family.**
