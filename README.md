@@ -1,5 +1,7 @@
 # DoseNest
 
+> AI-Powered Medication Management System
+
 <div align="center">
   <img src="./dosenest.png?v=2" alt="DoseNest Logo" width="400">
 </div>

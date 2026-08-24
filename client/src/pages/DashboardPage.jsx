@@ -20,7 +20,6 @@ import {
   Wifi,
   X,
 } from "lucide-react";
-
 const formatTime = (iso) => {
   if (!iso) return "";
   const date = new Date(iso);
@@ -55,11 +54,9 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     loadStats();
   }, [loadStats]);
-
   const handleDose = async (action) => {
     const upcoming = stats?.upcomingDose;
     if (!upcoming || doseBusy) return;
