@@ -85,9 +85,7 @@ export default function DashboardPage() {
     { label: "Taken today", value: stats?.takenToday ?? 0, icon: Check },
     { label: "Missed today", value: stats?.missedToday ?? 0, icon: X },
   ];
-
   const upcoming = stats?.upcomingDose;
-
   const familySection =
     familyOverview?.memberCount === 0 ? (
       <Link to="/family-care" className="family-dashboard-cta">
