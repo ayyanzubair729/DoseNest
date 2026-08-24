@@ -2,7 +2,6 @@
 
 > Living source of truth for the DoseNest project. Update this file whenever a
 > significant architectural or feature change is made.
-
 ## Product Vision
 
 DoseNest is a medication companion and family medication management platform. It helps a person

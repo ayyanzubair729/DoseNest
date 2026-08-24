@@ -20,7 +20,6 @@ import {
   Wifi,
   X,
 } from "lucide-react";
-
 const formatTime = (iso) => {
   if (!iso) return "";
   const date = new Date(iso);
