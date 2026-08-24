@@ -1,5 +1,9 @@
 # DoseNest
 
+<div align="center">
+  <img src="./dosenest.png" alt="DoseNest Logo" width="400">
+</div>
+
 **Your medication companion for you and your family.**
 
 DoseNest is an original family medication management platform. It helps you manage your own
