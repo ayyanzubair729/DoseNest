@@ -110,7 +110,7 @@ export default function DashboardPage() {
               View Family Care
               <ChevronRight size={15} aria-hidden="true" />
             </Link>
-          </div>
+        </div>
           <div className="family-dashboard__body">
             <div className="family-dashboard__stat">
               <span className="family-dashboard__value">{familyOverview.memberCount}</span>
