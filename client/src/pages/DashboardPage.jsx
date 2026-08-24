@@ -54,11 +54,9 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     loadStats();
   }, [loadStats]);
-
   const handleDose = async (action) => {
     const upcoming = stats?.upcomingDose;
     if (!upcoming || doseBusy) return;
