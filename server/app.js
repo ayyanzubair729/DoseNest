@@ -30,7 +30,7 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   // Meta delivers webhooks from shared provider IPs — never throttle them.
-  skip: (req) => req.path.startsWith("/api/webhooks/whatsapp"),
+  skip: (req) => req.path.startsWith("/webhooks/whatsapp"),
 });
 
 app.use("/api", apiLimiter);
