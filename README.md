@@ -1,6 +1,7 @@
 # DoseNest
 
-> AI-Powered Medication Management System
+> Medication Management System
+
 
 <!-- Pair Extraordinaire badge contribution -->
 
