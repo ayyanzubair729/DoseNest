@@ -8,7 +8,7 @@
   <img src="./dosenest.png?v=2" alt="DoseNest Logo" width="400">
 </div>
 
-**Your medication companion for you and your family.**
+**Your medication companion for you and your family...**
 
 DoseNest is an original family medication management platform. It helps you manage your own
 medications and the ones you look after — for parents, grandparents, children, and other family
@@ -336,5 +336,6 @@ Use the included `.prettierrc` as your formatter config. Pair formatting with yo
 ## License
 
 Not licensed yet. Proprietary/portfolio project — reach out before reusing.
- 
+
+ 
  
