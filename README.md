@@ -1,342 +1,648 @@
 # DoseNest
 
-> Medication Management System
-
-
-<!-- Pair Extraordinaire badge contribution -->
+> **Medication Management System**
 
 <div align="center">
   <img src="./dosenest.png?v=2" alt="DoseNest Logo" width="400">
 </div>
 
-**Your medication companion for you and your family...**
+**Your medication companion for you and your family.**
 
-DoseNest is an original family medication management platform. It helps you manage your own
-medications and the ones you look after — for parents, grandparents, children, and other family
-members — with clear schedules, gentle reminders, and an honest record of what was taken, skipped,
-or snoozed.
+DoseNest is a family medication management platform designed to help users organize medications for themselves and the people they care for — including parents, grandparents, children, and other family members.
 
-Built as a modern, friendly healthcare/family-care MERN application with a soft yellow & green
-bird mascot as its brand identity
+It provides medication schedules, reminders, dose tracking, medication history, and optional WhatsApp notifications through the official Meta WhatsApp Cloud API.
 
-> DoseNest is **not** a medical device, diagnostic tool, or advice platform. It helps organize the
-> medications you and your family already take. This is an original product, not affiliated with or
-> copied from any existing medication reminder service.
+> **Note:** DoseNest is not a medical device, diagnostic tool, or medical advice platform. It is designed to help users organize medications they already take.
 
-## Key Features
+---
 
-- Manage medications for yourself and your family (Family Care Mode).
-- Create medication schedules with repeat rules.
-- Track doses as taken, skipped, or snoozed.
-- Medication history and adherence monitoring.
-- Prescription management (upload + future AI extraction with explicit user confirmation).
-- Opt-in WhatsApp medication reminders (Meta WhatsApp Cloud API — Phase 7).
+## Features
 
-**Status note:** the repository currently contains the project foundation. See
-[MVP.md](./MVP.md) for an honest, up-to-date list of what is implemented vs. planned.
+### Medication Management
+
+* Create and manage medications
+* Create medication schedules and repeat rules
+* Track doses as:
+
+  * Taken
+  * Skipped
+  * Snoozed
+* View medication history
+* Monitor medication adherence
+
+### Family Care
+
+* Manage medications for yourself and family members
+* Support for parents, grandparents, children, and other dependents
+* Separate medication records for each family member
+
+### Prescription Management
+
+* Prescription upload support
+* Planned AI/OCR extraction
+* User confirmation before extracted information is saved
+
+### Notifications
+
+* In-app medication reminders
+* Optional WhatsApp medication reminders
+* WhatsApp delivery status tracking
+* WhatsApp `TAKEN` confirmation flow
+
+### Authentication & Security
+
+* JWT authentication
+* httpOnly cookies
+* Password hashing with bcryptjs
+* Session expiration
+* Client-side idle timeout
+* API rate limiting
+* Secure HTTP headers with Helmet
+* CORS protection
+
+---
+
+## Project Status
+
+The repository contains the project foundation and implemented features across multiple development phases.
+
+For the detailed implementation status and planned work, see:
+
+**[MVP.md](./MVP.md)**
+
+---
 
 ## Tech Stack
 
-| Layer       | Tech                                                        |
-| ----------- | ------------------------------------------------------------ |
-| Frontend    | React 18, Vite 6, JavaScript, React Router 7, Axios, CSS     |
-| Icons       | Lucide React                                                 |
-| Motion      | Framer Motion (used sparingly)                               |
-| Backend     | Node.js, Express 4, JavaScript, MongoDB + Mongoose 8         |
-| Auth        | JWT (httpOnly cookie), bcryptjs — implemented (Phase 3)       |
-| Security    | helmet, cors (credentials), express-rate-limit, dotenv       |
-| Tooling     | ESLint 9 (flat config), Prettier, Nodemon, npm workspaces    |
+| Layer              | Technology                       |
+| ------------------ | -------------------------------- |
+| Frontend           | React 18, Vite 6, JavaScript     |
+| Routing            | React Router 7                   |
+| HTTP Client        | Axios                            |
+| Styling            | CSS                              |
+| Icons              | Lucide React                     |
+| Animation          | Framer Motion                    |
+| Backend            | Node.js, Express 4               |
+| Database           | MongoDB                          |
+| ODM                | Mongoose 8                       |
+| Authentication     | JWT + httpOnly Cookies           |
+| Password Hashing   | bcryptjs                         |
+| Security           | Helmet, CORS, express-rate-limit |
+| Tooling            | ESLint 9, Prettier, Nodemon      |
+| Package Management | npm Workspaces                   |
+| Messaging          | Meta WhatsApp Cloud API          |
+
+---
 
 ## Project Architecture
 
-```
+```text
 dose-nest/
-├── client/            React + Vite frontend
-│   ├── public/assets/ bird.jpeg mascot (add here)
+│
+├── client/                       # React + Vite frontend
+│   ├── public/
+│   │   └── assets/
+│   │       └── bird.jpeg
+│   │
 │   └── src/
-│       ├── components/  brand, common, layout
-│       ├── layouts/
-│       ├── pages/
-│       ├── routes/
-│       ├── services/    centralized axios client
-│       ├── store/       (placeholder)
-│       ├── hooks/
-│       ├── utils/
-│       └── styles/      design tokens + global css
-├── server/            Express + Mongoose API
-│   ├── config/        db connection
-│   ├── controllers/
-│   ├── middleware/    auth (placeholder), notFound, errorHandler
-│   ├── models/        User, FamilyMember, Medication, MedicationSchedule,
-│   │                  MedicationLog, Prescription, Notification
-│   ├── routes/        /api/health implemented
-│   ├── services/      (placeholder)
-│   ├── jobs/          (placeholder)
-│   ├── utils/         AppError
-│   └── validators/    (placeholder)
-├── docs/
-├── MVP.md             living project source of truth
-└── package.json       npm workspaces + combined scripts
+│       ├── components/           # Reusable UI components
+│       ├── layouts/              # Application layouts
+│       ├── pages/                # Application pages
+│       ├── routes/               # Frontend routes
+│       ├── services/             # Centralized Axios client
+│       ├── store/                # State management
+│       ├── hooks/                # Custom React hooks
+│       ├── utils/                # Utility functions
+│       └── styles/               # Global styles and design tokens
+│
+├── server/                       # Express + MongoDB backend
+│   ├── config/                   # Database configuration
+│   ├── controllers/              # Request controllers
+│   ├── middleware/               # Authentication and error handling
+│   ├── models/                   # MongoDB/Mongoose models
+│   ├── routes/                   # API routes
+│   ├── services/                 # Business logic/services
+│   ├── jobs/                     # Background jobs
+│   ├── utils/                    # Backend utilities
+│   └── validators/               # Request validation
+│
+├── docs/                         # Project documentation
+├── MVP.md                        # Implementation roadmap/status
+├── package.json                  # Workspace configuration
+└── README.md
 ```
+
+### Main Backend Models
+
+```text
+User
+FamilyMember
+Medication
+MedicationSchedule
+MedicationLog
+Prescription
+Notification
+```
+
+---
+
+# Getting Started
+
+## Requirements
+
+Before running DoseNest locally, make sure you have:
+
+* Node.js 18+
+* npm
+* MongoDB
+
+MongoDB can either run locally or be hosted remotely through a service such as MongoDB Atlas.
+
+---
 
 ## Installation
 
-Requirements: Node.js 18+ and MongoDB running locally (or a remote `MONGODB_URI`).
+Clone the repository and install the dependencies:
 
 ```bash
-# 1. Install all workspace dependencies
 npm install
-
-# 2. Configure environment variables
-copy server\.env.example server\.env
-# then edit server\.env with your MONGODB_URI and a strong JWT_SECRET
 ```
+
+Create the server environment file:
+
+```bash
+copy server\.env.example server\.env
+```
+
+Then open `server/.env` and configure your environment variables.
+
+---
 
 ## Environment Variables
 
-| Variable       | Description                                    | Example                              |
-| -------------- | ---------------------------------------------- | ------------------------------------ |
-| `NODE_ENV`     | Runtime environment                            | `development`                        |
-| `PORT`         | API server port                                | `5000`                               |
-| `MONGODB_URI`  | MongoDB connection string                      | `mongodb://127.0.0.1:27017/dosenest` |
-| `JWT_SECRET`   | Secret used to sign JWTs (long random value)   | `generate_a_long_random_value`       |
-| `JWT_ACCESS_TOKEN_EXPIRES_IN` | Access-token lifetime (finite session expiry) | `7d`                     |
-| `JWT_EXPIRES_IN` | Legacy alias for the token lifetime           | `7d`                                 |
-| `SESSION_IDLE_TIMEOUT_MINUTES` | Client-side inactivity guard (0 disables) | `60`                       |
-| `CLIENT_URL`   | Allowed frontend origin for CORS credentials   | `http://localhost:5173`              |
-| `WHATSAPP_ENABLED` | Master switch for WhatsApp delivery (default `false`) | `false`                     |
-| `WHATSAPP_TEST_MODE` | Simulate sends locally without credentials   | `false`                      |
-| `WHATSAPP_ACCESS_TOKEN` | Meta Cloud API access token (never commit) | *(from Meta)*              |
-| `WHATSAPP_PHONE_NUMBER_ID` | Business phone number ID (never commit)  | *(from Meta)*              |
-| `WHATSAPP_BUSINESS_ACCOUNT_ID` | Optional — not required for sending | *(from Meta)*              |
-| `WHATSAPP_API_VERSION` | Graph API version used for messages        | `v21.0`                              |
-| `WHATSAPP_MAX_RETRIES` | Retries for transient provider failures   | `2`                                  |
-| `WHATSAPP_RETRY_DELAY_MS` | Delay between retries                 | `2000`                               |
-| `WHATSAPP_REQUEST_TIMEOUT_MS` | Per-request timeout                | `10000`                              |
-| `WHATSAPP_TEMPLATE_LANGUAGE` | Template language code (Cloud API)   | `en`                                 |
-| `WHATSAPP_TEMPLATE_MEDICATION_DUE` | Approved template name            | `medication_due_reminder`            |
-| `WHATSAPP_TEMPLATE_MEDICATION_MISSED` | Approved template name          | `medication_missed_reminder`         |
-| `WHATSAPP_TEMPLATE_MEDICATION_TAKEN` | Approved template name            | `medication_taken_confirmation`      |
-| `WHATSAPP_TEMPLATE_REMINDER` | Approved template name                | `medication_upcoming_reminder`       |
-| `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | Token echoed during Meta's webhook subscription handshake | `random_value`       |
-| `WHATSAPP_APP_SECRET` | Optional — enables X-Hub-Signature-256 webhook verification | *(from Meta)*       |
-| `WHATSAPP_TAKEN_CONFIRMATION_WINDOW_MINUTES` | How long a `TAKEN` reply is accepted | `90`                |
+| Variable                                     | Description                           | Example                              |
+| -------------------------------------------- | ------------------------------------- | ------------------------------------ |
+| `NODE_ENV`                                   | Application environment               | `development`                        |
+| `PORT`                                       | Backend server port                   | `5000`                               |
+| `MONGODB_URI`                                | MongoDB connection string             | `mongodb://127.0.0.1:27017/dosenest` |
+| `JWT_SECRET`                                 | Secret used to sign JWTs              | `generate_a_long_random_value`       |
+| `JWT_ACCESS_TOKEN_EXPIRES_IN`                | JWT expiration time                   | `7d`                                 |
+| `JWT_EXPIRES_IN`                             | Legacy token expiration alias         | `7d`                                 |
+| `SESSION_IDLE_TIMEOUT_MINUTES`               | Client inactivity timeout             | `60`                                 |
+| `CLIENT_URL`                                 | Frontend URL used for CORS            | `http://localhost:5173`              |
+| `WHATSAPP_ENABLED`                           | Enable WhatsApp delivery              | `false`                              |
+| `WHATSAPP_TEST_MODE`                         | Simulate WhatsApp messages            | `false`                              |
+| `WHATSAPP_ACCESS_TOKEN`                      | Meta Cloud API access token           | —                                    |
+| `WHATSAPP_PHONE_NUMBER_ID`                   | WhatsApp business phone number ID     | —                                    |
+| `WHATSAPP_BUSINESS_ACCOUNT_ID`               | Optional WhatsApp business account ID | —                                    |
+| `WHATSAPP_API_VERSION`                       | Meta Graph API version                | `v21.0`                              |
+| `WHATSAPP_MAX_RETRIES`                       | Maximum provider retries              | `2`                                  |
+| `WHATSAPP_RETRY_DELAY_MS`                    | Retry delay                           | `2000`                               |
+| `WHATSAPP_REQUEST_TIMEOUT_MS`                | API request timeout                   | `10000`                              |
+| `WHATSAPP_TEMPLATE_LANGUAGE`                 | WhatsApp template language            | `en`                                 |
+| `WHATSAPP_TEMPLATE_MEDICATION_DUE`           | Medication due template               | `medication_due_reminder`            |
+| `WHATSAPP_TEMPLATE_MEDICATION_MISSED`        | Missed medication template            | `medication_missed_reminder`         |
+| `WHATSAPP_TEMPLATE_MEDICATION_TAKEN`         | Taken confirmation template           | `medication_taken_confirmation`      |
+| `WHATSAPP_TEMPLATE_REMINDER`                 | Upcoming reminder template            | `medication_upcoming_reminder`       |
+| `WHATSAPP_WEBHOOK_VERIFY_TOKEN`              | Meta webhook verification token       | —                                    |
+| `WHATSAPP_APP_SECRET`                        | Optional webhook signature secret     | —                                    |
+| `WHATSAPP_TAKEN_CONFIRMATION_WINDOW_MINUTES` | Validity window for `TAKEN` replies   | `90`                                 |
 
-`.env` files are git-ignored. Never commit real secrets. Full placeholder list:
-`server/.env.example`.
+> Never commit real secrets or API credentials. Environment files are git-ignored.
 
-## WhatsApp Integration (Phases 7, 8 & 9)
+---
 
-DoseNest delivers medication reminders over WhatsApp using the **official Meta WhatsApp
-Cloud API** (Graph API). The Phase 6 notification engine remains the source of truth — WhatsApp is
-just a delivery channel layered on top. Phase 8 adds webhooks (delivery status updates + the
-**TAKEN** reply flow); Phase 9 completes real-delivery readiness.
+# Running the Project
 
-**Full developer guide: [`docs/WHATSAPP_SETUP.md`](docs/WHATSAPP_SETUP.md)** — Meta app setup,
-credentials, approved-template contracts, webhook configuration, local webhook testing, and the
-complete testing checklist.
-
-**Safety:** with `WHATSAPP_TEST_MODE=true` every send is simulated — real messages are never sent
-while test mode is enabled, even if credentials are present. Real delivery requires
-`WHATSAPP_ENABLED=true` + credentials + approved templates. TAKEN replies also accept **YES** and
-**DONE** as aliases.
-
-### How it works
-
-```
-Reminder engine → Notification (MongoDB) → WhatsApp delivery service → WhatsApp service → Cloud API
-```
-
-When the reminder engine creates a `medication_due`, `medication_missed`, `medication_taken`, or
-`reminder` notification, the delivery pipeline checks that WhatsApp is enabled, configured, the user
-has opted in with a valid E.164 phone number, then sends and records the result (status,
-`providerMessageId`, attempts) on the same notification. Delivery is **idempotent** (a notification
-is never sent twice) and never blocks or breaks the reminder engine.
-
-### Setup requirements
-
-1. **Create a WhatsApp Business Account** at the Meta developer portal
-   (https://developers.facebook.com) and register a business phone number.
-2. **Create an app** and enable the WhatsApp product to get an access token and phone number ID.
-3. **Create and submit message templates** (see below).
-4. **Configure `server/.env`** with the credentials — never commit them.
-5. **Enable delivery**: set `WHATSAPP_ENABLED=true`.
-6. Users opt in from **Settings → WhatsApp Medication Reminders**: add their phone number (E.164,
-   e.g. `+15551234567`) and toggle **"Accept WhatsApp medication reminders"** on. Consent is
-   explicit — a phone number alone never enables delivery, and the toggle stays OFF by default.
-   Reminders are only ever sent to the account owner's own number.
-
-### Template requirements
-
-Business-initiated WhatsApp messages require **pre-approved templates** created in the WABA console.
-DoseNest expects the following templates (names are configurable via env; language default `en`):
-
-| Template name (default)            | Parameters                                                                  |
-| ---------------------------------- | --------------------------------------------------------------------------- |
-| `medication_due_reminder`          | `{{1}}` first name, `{{2}}` subject, `{{3}}` time                           |
-| `medication_missed_reminder`       | `{{1}}` first name, `{{2}}` subject, `{{3}}` time                           |
-| `medication_taken_confirmation`    | `{{1}}` first name, `{{2}}` subject                                         |
-| `medication_upcoming_reminder`     | `{{1}}` first name, `{{2}}` subject, `{{3}}` time                           |
-
-`subject` is a privacy-conscious summary like "Metformin (500 mg)" or "Mom's Metformin (500 mg)".
-
-### Local test mode
-
-For development, WhatsApp is **disabled by default** (`WHATSAPP_ENABLED=false`) — reminders still work
-in-app and no provider request is ever attempted. To exercise the delivery pipeline safely:
+From the project root:
 
 ```bash
+npm run dev
+```
+
+This starts both the frontend and backend.
+
+### Individual Services
+
+Start the backend:
+
+```bash
+npm run dev:server
+```
+
+Start the frontend:
+
+```bash
+npm run dev:client
+```
+
+Build the frontend:
+
+```bash
+npm run build
+```
+
+Run linting:
+
+```bash
+npm run lint
+```
+
+Format the project:
+
+```bash
+npm run format
+```
+
+Start the production server:
+
+```bash
+npm start
+```
+
+---
+
+## Local URLs
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+Backend:
+
+```text
+http://localhost:5000
+```
+
+Health check:
+
+```text
+http://localhost:5000/api/health
+```
+
+The Vite development server proxies `/api` requests to the backend.
+
+---
+
+# WhatsApp Integration
+
+DoseNest supports optional medication reminders through the **official Meta WhatsApp Cloud API**.
+
+WhatsApp works as a delivery channel on top of the application's notification engine.
+
+```text
+Medication Reminder
+        ↓
+Notification
+        ↓
+MongoDB
+        ↓
+WhatsApp Delivery Service
+        ↓
+Meta WhatsApp Cloud API
+        ↓
+User's WhatsApp
+```
+
+WhatsApp integration supports:
+
+* Medication due reminders
+* Missed medication reminders
+* Medication taken confirmations
+* Upcoming reminders
+* Delivery status tracking
+* `TAKEN` replies
+* Webhook processing
+* Test-mode simulation
+
+For the complete WhatsApp configuration guide, see:
+
+**[docs/WHATSAPP_SETUP.md](docs/WHATSAPP_SETUP.md)**
+
+---
+
+## WhatsApp Safety
+
+WhatsApp delivery is disabled by default:
+
+```env
+WHATSAPP_ENABLED=false
+```
+
+For local development, test mode can be enabled:
+
+```env
 WHATSAPP_TEST_MODE=true
 ```
 
-With test mode on and no credentials, messages are **simulated locally** and clearly marked
-(`simulated: true`; the UI shows "WhatsApp: Simulated (test mode)"). Simulation never pretends a real
-message was delivered.
+In test mode:
 
-### Testing safely
+* No real WhatsApp messages are sent
+* Messages are simulated locally
+* The system marks simulated messages clearly
+* Provider credentials are not required
 
-- **Disabled first**: confirm reminders and notifications still work with `WHATSAPP_ENABLED=false`
-  (no WhatsApp traffic).
-- **Then test mode**: enable `WHATSAPP_TEST_MODE=true` and use **Settings → Send test message**
-  (authenticated; only ever sends to your own number).
-- **Only then real delivery**: add real credentials and approved templates, then send a test message
-  to your own verified number before enabling end-to-end reminder delivery.
-- Never accept arbitrary recipient numbers from any endpoint.
+Real delivery requires:
 
-### Webhooks (Phase 8)
+```env
+WHATSAPP_ENABLED=true
+```
 
-**Routes** (public on purpose — Meta calls them without a DoseNest session; security comes from
-verification, not JWT):
+along with valid Meta credentials and approved WhatsApp message templates.
 
-| Route | Purpose |
-| ----- | ------- |
-| `GET /api/webhooks/whatsapp` | Meta subscription handshake (`hub.mode=subscribe`, `hub.verify_token`, `hub.challenge`) — echoes the challenge when the token matches `WHATSAPP_WEBHOOK_VERIFY_TOKEN`. |
-| `POST /api/webhooks/whatsapp` | Delivery status (`sent`/`delivered`/`read`/`failed`) and incoming messages (`TAKEN`). |
+---
 
-### Delivery status behavior
+## WhatsApp User Consent
 
-Status events are matched to the existing Notification by `providerMessageId` and update it in
-place — the Phase 7 notification record is preserved, never duplicated. The notification UI shows
-the resulting state (Sent / Delivered / Read / Failed), plus **Simulated** for test-mode sends.
+Users must explicitly opt in before receiving WhatsApp reminders.
 
-### TAKEN command
+Users can enable reminders from:
 
-Users can reply to a reminder with **TAKEN** (case-insensitive, whitespace-tolerant) to confirm the
-dose. Flow: sender phone → verified DoseNest account → opt-in check → most recent eligible dose
-within `WHATSAPP_TAKEN_CONFIRMATION_WINDOW_MINUTES` → MedicationLog marked taken → adherence updates
-naturally → confirmation reply sent. Webhook deliveries are deduplicated (provider event/message IDs)
-so the same TAKEN can never mark a dose twice or resend confirmations.
+```text
+Settings
+→ WhatsApp Medication Reminders
+```
 
-### Multiple-dose behavior
+They must:
 
-If several eligible doses exist at once, DoseNest does **not** guess — it replies asking for the
-medication name, and `TAKEN <medication name>` matches against your real medication records.
-Ambiguous or unmatched names get a clarification reply.
+1. Provide their phone number in E.164 format.
+2. Enable WhatsApp medication reminders.
+3. Confirm the configuration.
 
-### Webhook verification & security
+A phone number alone does not enable WhatsApp delivery.
 
-- GET handshake: challenge echoed only when `hub.verify_token` equals `WHATSAPP_WEBHOOK_VERIFY_TOKEN`.
-- POST verification: set `WHATSAPP_APP_SECRET` to require a valid `X-Hub-Signature-256` HMAC over the
-  raw body (recommended for real delivery; optional locally).
-- Sender identity comes only from the verified WhatsApp phone number linked to the account — body
-  `userId`/`notificationId`/`medicationId` values are never trusted.
-- TAKEN is ignored for unknown senders (masked log, nothing modified/revealed) and for users with
-  WhatsApp reminders disabled.
-- No real provider request is ever made in test mode.
+Reminders are only sent to the account owner's verified number.
 
-### Local webhook testing
+---
 
-localhost cannot receive Meta webhooks directly. With `WHATSAPP_TEST_MODE=true`, use the protected
-endpoint **`POST /api/notifications/whatsapp/simulate-webhook`** (authenticated) to feed fabricated
-events — `sent`, `delivered`, `read`, `failed`, or `taken` — through the **same** webhook processing
-service real Meta events use. Delivery-status simulation only references your own notifications.
+## WhatsApp Message Templates
 
-## Future Integrations (Planned, Not Implemented)
+Business-initiated WhatsApp messages require approved templates.
 
-- Scheduled reminder jobs beyond the current in-process interval job.
-- Prescription upload with AI/OCR extraction — users always review and confirm before data is saved.
-- Medication adherence analytics and insights.
-- Predictive adherence insights / recommendation engine.
-- Cloud image storage.
-- Email notifications.
+DoseNest expects the following default templates:
 
-## Development Commands
+| Template                        | Parameters                   |
+| ------------------------------- | ---------------------------- |
+| `medication_due_reminder`       | First name, medication, time |
+| `medication_missed_reminder`    | First name, medication, time |
+| `medication_taken_confirmation` | First name, medication       |
+| `medication_upcoming_reminder`  | First name, medication, time |
 
-Run everything from the project root:
+Template names can be configured through environment variables.
 
-| Command              | What it does                                          |
-| -------------------- | ----------------------------------------------------- |
-| `npm run dev`        | Start server (nodemon, :5000) and client (Vite, :5173) together |
-| `npm run dev:server` | Start backend only                                    |
-| `npm run dev:client` | Start frontend only                                   |
-| `npm run build`      | Production build of the client                        |
-| `npm run lint`       | Lint client and server                                |
-| `npm run format`     | Prettier format client and server                     |
-| `npm start`          | Run the API server in production mode                 |
+---
 
-The Vite dev server proxies `/api` requests to `http://localhost:5000`.
+# WhatsApp Webhooks
 
-Health check: `GET http://localhost:5000/api/health`
+DoseNest uses webhooks to process:
 
-## Session Management (Phase 6.5)
+* Message delivery status
+* Sent events
+* Delivered events
+* Read events
+* Failed events
+* Incoming `TAKEN` messages
 
-- **Finite sessions**: access tokens expire per `JWT_ACCESS_TOKEN_EXPIRES_IN` (default 7d); the
-  httpOnly cookie's lifetime stays aligned. There is no "forever" session.
-- **Secure storage**: the JWT lives only in an httpOnly, SameSite=Lax (Secure in production)
-  cookie. The frontend cannot read it; nothing is stored in localStorage.
-- **Refresh restore**: on every page load the app validates the session via `GET /api/auth/me`
-  (which also returns the non-secret idle-timeout config) — never trust stale frontend state.
-- **Expiry while active**: any non-auth 401 is handled centrally by the axios client — auth state
-  is cleared, the user is redirected to `/login`, and a friendly "Your session has expired. Please
-  log in again." message is shown once (no loops).
-- **Idle timeout**: `SESSION_IDLE_TIMEOUT_MINUTES` (default 60) arms a client-side inactivity
-  guard that resets on real interaction (pointer/keyboard/touch/wheel) and logs out after genuine
-  idle time. The JWT remains the hard server-side expiry; the architecture is a soft client guard
-  because sessions are stateless JWTs.
-- **Logout**: clears the cookie and client state; protected routes and the backend both keep
-  enforcing authentication afterwards.
-- **Login throttling**: login/register are rate-limited per IP (20 attempts / 15 min) on top of
-  the global `/api` limiter.
+### Routes
 
-## Security Notes
+| Method | Endpoint                 | Purpose                               |
+| ------ | ------------------------ | ------------------------------------- |
+| `GET`  | `/api/webhooks/whatsapp` | Meta webhook verification             |
+| `POST` | `/api/webhooks/whatsapp` | Delivery events and incoming messages |
 
-- No hardcoded secrets; everything comes from environment variables.
-- WhatsApp credentials live **only** in `server/.env` — never in React code, never exposed by any
-  API response, never logged (recipients are masked in logs; tokens and authorization headers are
-  never logged).
-- Global API rate limiting (`express-rate-limit`) applied to `/api`.
-- helmet sets secure HTTP headers; CORS restricted to `CLIENT_URL` with credentials.
-- Passwords hashed with bcryptjs (cost 12); tokens signed with JWT and stored in an httpOnly
-  cookie (SameSite=Lax, Secure in production).
-- Credentials never live in client-side code or storage; the auth state is restored via
-  `GET /api/auth/me` on startup.
-- The WhatsApp test endpoint only ever sends to the authenticated user's own number — it cannot be
-  used as an open sender.
+Webhook events are matched to existing notifications using the provider message ID.
 
-## Future Deployment
+This prevents duplicate notification records.
 
-Not deployed yet. Planned approach:
+---
 
-- Build client with `npm run build` and serve via a static host or the Express app.
-- Host MongoDB (Atlas) and configure `MONGODB_URI` as an environment variable on the host.
-- Set `NODE_ENV=production` and a strong `JWT_SECRET`.
-- Point `CLIENT_URL` at the real frontend domain.
-- CI (lint + build + tests) and containerization can be added later.
+## TAKEN Command
 
-## Recommended VS Code Extensions
+Users can confirm a medication dose by replying:
 
-- **ESLint** (`dbaeumer.vscode-eslint`) — catch issues as you type.
-- **Prettier** (`esbenp.prettier-vscode`) — consistent formatting.
-- **ES7+ React/Redux/JS snippets** (`dsznajder.es7-react-js-snippets`) — React snippets.
-- **MongoDB for VS Code** (`mongodb.mongodb-vscode`) — inspect the local DB.
-- **GitLens** (`eamodio.gitlens`) — richer git history and blame.
+```text
+TAKEN
+```
 
-Use the included `.prettierrc` as your formatter config. Pair formatting with your editor's
-"Format on Save" for best results.
+The system:
 
-## License
+1. Identifies the sender's verified WhatsApp account.
+2. Confirms that WhatsApp reminders are enabled.
+3. Finds the most recent eligible dose.
+4. Marks the medication log as taken.
+5. Updates adherence information.
+6. Sends a confirmation response.
 
-Not licensed yet. Proprietary/portfolio project — reach out before reusing.
+The system also supports:
 
- 
- 
+```text
+TAKEN <medication name>
+```
+
+when multiple eligible doses exist.
+
+If the medication cannot be identified, DoseNest asks the user for clarification instead of guessing.
+
+---
+
+## Webhook Security
+
+Webhook processing includes:
+
+* Verification token validation
+* Optional `X-Hub-Signature-256` verification
+* Sender identity verification
+* WhatsApp opt-in validation
+* Duplicate event protection
+* Protection against arbitrary recipient numbers
+* Test-mode isolation
+
+Client-provided `userId`, `notificationId`, or `medicationId` values are not trusted for identifying the sender or modifying medication records.
+
+---
+
+# Authentication & Session Management
+
+DoseNest uses JWT-based authentication with httpOnly cookies.
+
+### Session Behavior
+
+* JWT access tokens expire after a finite period.
+* Default token lifetime is `7d`.
+* Tokens are stored in httpOnly cookies.
+* Tokens are not stored in `localStorage`.
+* Cookies use `SameSite=Lax`.
+* Production cookies use `Secure`.
+* Sessions are validated through:
+
+```text
+GET /api/auth/me
+```
+
+### Session Expiration
+
+When a session expires:
+
+1. Authentication state is cleared.
+2. The user is redirected to `/login`.
+3. A session-expired message is displayed.
+4. Authentication loops are prevented.
+
+### Idle Timeout
+
+The client can enforce an inactivity timeout using:
+
+```env
+SESSION_IDLE_TIMEOUT_MINUTES=60
+```
+
+The timeout resets when the user interacts through:
+
+* Mouse/pointer
+* Keyboard
+* Touch
+* Wheel
+
+The JWT expiration remains the final server-side authentication boundary.
+
+---
+
+# Security
+
+DoseNest includes several security measures:
+
+* Environment-based secrets
+* JWT authentication
+* httpOnly authentication cookies
+* bcryptjs password hashing
+* Helmet security headers
+* CORS restrictions
+* API rate limiting
+* Login/register throttling
+* No credentials in frontend code
+* No sensitive credentials in API responses
+* Masked phone numbers in logs
+* WhatsApp credentials stored only on the server
+* Webhook signature verification
+* Duplicate webhook protection
+
+Passwords are hashed using bcryptjs with a cost factor of 12.
+
+Login and registration endpoints are additionally rate-limited to help prevent abuse.
+
+---
+
+# Development Architecture
+
+The frontend communicates with the Express backend through REST APIs.
+
+```text
+React + Vite
+     │
+     │ Axios
+     ▼
+Express API
+     │
+     ├── Authentication
+     ├── Medication Management
+     ├── Scheduling
+     ├── Notifications
+     ├── WhatsApp Integration
+     │
+     ▼
+MongoDB
+```
+
+The application also contains an in-process reminder mechanism for notification generation.
+
+---
+
+# Future Roadmap
+
+The following features are planned and are not currently implemented:
+
+* Advanced scheduled reminder jobs
+* Prescription AI/OCR extraction
+* Medication adherence analytics
+* Predictive adherence insights
+* Recommendation engine
+* Cloud image storage
+* Email notifications
+
+The project roadmap is maintained in:
+
+**[MVP.md](./MVP.md)**
+
+---
+
+# VS Code Extensions
+
+Recommended extensions for development:
+
+* **ESLint** — `dbaeumer.vscode-eslint`
+* **Prettier** — `esbenp.prettier-vscode`
+* **ES7+ React/Redux/JS Snippets** — `dsznajder.es7-react-js-snippets`
+* **MongoDB for VS Code** — `mongodb.mongodb-vscode`
+* **GitLens** — `eamodio.gitlens`
+
+The repository includes a `.prettierrc` configuration.
+
+For consistent formatting, enable **Format on Save** in VS Code.
+
+---
+
+# Deployment
+
+DoseNest is currently **not deployed**.
+
+The planned deployment architecture is:
+
+```text
+Frontend
+   ↓
+Static Hosting / Express
+   ↓
+Express API
+   ↓
+MongoDB Atlas
+```
+
+Production deployment requires:
+
+1. Build the frontend:
+
+```bash
+npm run build
+```
+
+2. Configure MongoDB:
+
+```env
+MONGODB_URI=<production-mongodb-uri>
+```
+
+3. Configure a strong JWT secret:
+
+```env
+JWT_SECRET=<strong-random-secret>
+```
+
+4. Set:
+
+```env
+NODE_ENV=production
+```
+
+5. Configure the production frontend URL:
+
+```env
+CLIENT_URL=<production-frontend-url>
+```
+
+CI/CD, automated tests, and containerization can be added as the project evolves.
+
+---
+
+
